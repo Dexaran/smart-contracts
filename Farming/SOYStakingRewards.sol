@@ -48,7 +48,7 @@ abstract contract IERC223 {
      * @dev Transfers `value` tokens from `msg.sender` to `to` address with `data` parameter
      * and returns `true` on success.
      */
-    function transfer(address to, uint value, bytes calldata data) public virtual returns (bool success);
+    function transfer(address to, uint value, bytes memory data) public virtual returns (bool success);
      
      /**
      * @dev Event that is fired on successful transfer.
@@ -80,7 +80,7 @@ abstract contract IERC223Recipient {
  * @param _value Amount of tokens.
  * @param _data  Transaction metadata.
  */
-    function tokenReceived(address _from, uint _value, bytes memory _data) public virtual;
+    function tokenReceived(address _from, uint _value, bytes calldata _data) public virtual;
 }
 
 
@@ -178,9 +178,10 @@ contract StakingRewards is IERC223Recipient, IStakingRewards, RewardsDistributio
 
     IERC223 public rewardsToken;
     IERC223 public stakingToken;
+    
     uint256 public periodFinish    = 0;
     uint256 public rewardRate      = 0;
-    uint256 public rewardsDuration = 1 days;
+    uint256 public rewardsDuration = 1 minutes; // DEBUGGING - default is 1 days
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
 
@@ -205,9 +206,9 @@ contract StakingRewards is IERC223Recipient, IStakingRewards, RewardsDistributio
     
     /* ========== ERC223 transaction handlers ====== */
     
-    function tokenReceived(address _from, uint256 _amount, bytes calldata _data) public override nonReentrant
+    function tokenReceived(address _from, uint256 _amount, bytes memory _data) public override
     {
-        _data; // Stupid warning silenced.
+        _data; // Stupid warning silencer.
         
         require(msg.sender == address(stakingToken), "Wrong token deposit reverted");
         require(_amount > 0, "Cannot stake 0");
@@ -265,7 +266,7 @@ contract StakingRewards is IERC223Recipient, IStakingRewards, RewardsDistributio
     }
 
     function earned(address account) public view override returns (uint256) {
-        return _balances[account] * rewardPerToken() - userRewardPerTokenPaid[account] / 1e18 + rewards[account];
+        return _balances[account] * (rewardPerToken() - userRewardPerTokenPaid[account]) / 1e18 + rewards[account];
     }
 
     function getRewardForDuration() external view override returns (uint256) {
@@ -278,7 +279,7 @@ contract StakingRewards is IERC223Recipient, IStakingRewards, RewardsDistributio
     function withdraw(uint256 amount) public override nonReentrant updateReward(msg.sender) {
         require(amount > 0, "Cannot withdraw 0");
         
-        _totalFarmingSupply          -= amount;
+        _totalFarmingSupply   -= amount;
         _balances[msg.sender] -= amount;
         
         stakingToken.transfer(msg.sender, amount);
@@ -303,7 +304,7 @@ contract StakingRewards is IERC223Recipient, IStakingRewards, RewardsDistributio
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
-    function notifyRewardAmount(uint256 reward) external override onlyRewardsDistribution updateReward(address(0)) {
+    function notifyRewardAmount(uint256 reward) external override updateReward(address(0)) {
         if (block.timestamp >= periodFinish) 
         {
             rewardRate = reward / rewardsDuration;
@@ -329,14 +330,18 @@ contract StakingRewards is IERC223Recipient, IStakingRewards, RewardsDistributio
                 lastUpdateTime = startNewPeriod;
         }
         periodFinish = (block.timestamp / rewardsDuration) * rewardsDuration;    // set periodFinish at 00:00 UTC
+        
         emit RewardAdded(reward);
     }
 
     /* ========== MODIFIERS ========== */
 
     modifier updateReward(address account) {
+        // This can be executed by both users or Globl Farm that prints new rewardTokens.
         rewardPerTokenStored = rewardPerToken();
         lastUpdateTime = lastTimeRewardApplicable();
+        
+        // Only when user calls the claim reward or withdraw function.
         if (account != address(0)) {
             rewards[account] = earned(account);
             userRewardPerTokenPaid[account] = rewardPerTokenStored;
