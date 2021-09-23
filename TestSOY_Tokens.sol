@@ -673,7 +673,7 @@ contract Ownable is Context {
 
 
 // SoyToken with Governance.
-contract SoyToken is ERC223("SOY Finance token", "SOY"), Ownable {
+contract SoyToken is ERC223("Test SOY223 Token", "TestSOY223"), Ownable {
     // @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
     function mint(address _to, uint256 _amount) public onlyMinter {
         _mint(_to, _amount);
