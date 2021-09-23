@@ -672,6 +672,28 @@ contract Ownable is Context {
 }
 
 
+
+contract TestLPToken is ERC223("Test LP223 Token", "TestLP"), Ownable {
+    
+    constructor() {
+        address msgSender = _msgSender();
+        _owner = msg.sender;  // Hardcoded the address of the OWNER MULTISIG of Callisto team on CLO chain (820 id)
+        _mint(msg.sender, 1000 * 10 ** 18);
+        minters[msg.sender] = true;
+        emit OwnershipTransferred(address(0), msgSender);
+    }
+
+    function assignMinter(address _minter, bool _status) public onlyOwner onlyDebugMode
+    {
+        minters[_minter] = _status;
+    }
+    
+    function disableDebug() public onlyOwner onlyDebugMode
+    {
+        debug_mode = false;
+    }
+}
+
 // SoyToken with Governance.
 contract SoyToken is ERC223("Test SOY223 Token", "TestSOY223"), Ownable {
     // @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
