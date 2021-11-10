@@ -22,24 +22,36 @@
 
 #### TestSOY223 token
 
-- address 0x79cDdFf263cd9EaF1Fc55EF678125B64183C5C2D
+- address 0xC8227f810FB2F4FacBf9D3CAbca21e47f51d87a3
 
-- link https://explorer.callisto.network/address/0x79cDdFf263cd9EaF1Fc55EF678125B64183C5C2D/transactions
+- link https://explorer.callisto.network/address/0xC8227f810FB2F4FacBf9D3CAbca21e47f51d87a3/transactions
 
 #### Test LP 223 token
 
-- address 0x01C5965206d26d4391148570636D3F74b5704E4D
+- address 0xF5d88D396Fc807F929336656D3018619d492A0f3
 
-- link https://explorer.callisto.network/address/0x01C5965206d26d4391148570636D3F74b5704E4D/transactions
+- link https://explorer.callisto.network/address/0xF5d88D396Fc807F929336656D3018619d492A0f3/transactions
 
-#### Test Global Farm contract
+#### Test Global Farm (1 day)
 
-- address 0xB70eE063707Be14ADcada78564C73040874beB26
+- address: 0x9e5Ebb61c0303632B05a2FAE53d7c25295Ee4b33
 
-- link https://explorer.callisto.network/address/0xB70eE063707Be14ADcada78564C73040874beB26/transactions
+#### Test Local Farm (1 day)
 
-#### Test Local Farm contract supporting TestSOY223 as rewardToken
+- address: 0xFE23db6A9Ca43B0312c7E4ACDa03785406FDB0a6
 
-- address 0xDA37856fb8Be71917DD0e1Bd81c622de92018A3D
+#### Test Global Farm contract (3 minutes)
 
-- link https://explorer.callisto.network/address/0xDA37856fb8Be71917DD0e1Bd81c622de92018A3D/transactions
+- Modifications: for testing reasons set `rewardDuration = 3 minutes`
+
+- address 0xE8B2Fee5D18ec30f5625a5f7F1f06E5df17E1774
+
+- link https://explorer.callisto.network/address/0xE8B2Fee5D18ec30f5625a5f7F1f06E5df17E1774/transactions
+
+#### Test Local Farm contract supporting TestSOY223 as rewardToken (3 minutes)
+
+- Modifications: for testing reasons removed `onlyRewardsDistribution` modifier and set `rewardDuration = 3 minutes`
+
+- address 0x999f7E26D9577FADD08CC6943798D12755722c99
+
+- link https://explorer.callisto.network/address/0x999f7E26D9577FADD08CC6943798D12755722c99/transactions
